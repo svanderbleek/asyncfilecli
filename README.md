@@ -1,6 +1,6 @@
 ## Trustline CLI
 
-Truevault engineering challenge, see: https://gist.github.com/traviscrist/c5b3ff8e52536917556f89727e2c9b10
+Allows payments between two terminal sessions on the same machine using files for communication.
 
 ## Build
 
