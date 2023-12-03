@@ -10,10 +10,13 @@ import kotlin.concurrent.thread
 class Trustline(val user: String, val partner: String) {
     val userFile: File
     val partnerFile: File
+    var prevBalance: Int
 
     init {
         userFile = createFileIfNotExists(fileString(user))
         partnerFile = createFileIfNotExists(fileString(partner))
+
+        prevBalance = readBalance(userFile)
     }
 
     fun fileString(name: String): String {
@@ -51,14 +54,29 @@ class Trustline(val user: String, val partner: String) {
     fun payPartner(ammount: Int) {
         var userBalance = readBalance(userFile)
         var partnerBalance = readBalance(partnerFile)
+
         userBalance -= ammount
         partnerBalance += ammount
+
         writeBalance(userFile, userBalance)
         writeBalance(partnerFile, partnerBalance)
     }
 
-    fun userFileString(): String {
-        return fileString(user)
+    fun matchPayment(file: String): Int {
+        if(file == userFile.getName()) {
+            val newBalance = readBalance(userFile)
+            val amount = newBalance - prevBalance
+
+            if(amount != 0) {
+                prevBalance = newBalance
+            }
+
+            if(amount > 0) {
+                return amount
+            }
+        }
+
+        return 0
     }
 }
 
@@ -74,18 +92,22 @@ fun displayPrompt() {
   print("> ")
 }
 
-fun watchForPayment(file: String) {
+fun watchForPayment(trustline: Trustline) {
   val currentDir = Path("")
   val watchService = FileSystems.getDefault().newWatchService()
+
   currentDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY)
 
   while (true) {
     val watchKey = watchService.take()
 
     for (event in watchKey.pollEvents()) {
-        if (file == event.context().toString()) {
+        val fileName = event.context().toString()
+        val amount = trustline.matchPayment(fileName)
+
+        if (amount > 0) {
             println()
-            println("You were paid!")
+            println("You were paid ${amount}!")
             displayPrompt()
         }
     }
@@ -96,7 +118,7 @@ fun watchForPayment(file: String) {
 
 fun commandLoop(trustline: Trustline) {
     thread {
-        watchForPayment(trustline.userFileString())
+        watchForPayment(trustline)
     }
 
     val input = Scanner(System.`in`)
@@ -113,9 +135,12 @@ fun processCommand(input: Scanner, trustline: Trustline) {
 
     when (command) {
         "pay" -> {
-            val ammount = input.nextInt()
-            println("Sent ${ammount}")
-            trustline.payPartner(ammount)
+            val amount = input.nextInt()
+
+            if(amount > 0) {
+              println("Sent ${amount}")
+              trustline.payPartner(amount)
+            }
         }
         "balance" -> {
             println(trustline.userBalance())
