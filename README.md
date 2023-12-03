@@ -32,3 +32,4 @@ When running the CLI and a parnter pays you you should see an event
 ```
 You were paid 10!
 ```
+

@@ -1,14 +1,23 @@
 import java.io.File
+import java.nio.file.FileSystems
 import java.util.Scanner
+import java.nio.file.StandardWatchEventKinds
+
 import kotlin.system.exitProcess
+import kotlin.io.path.Path
+import kotlin.concurrent.thread
 
 class Trustline(val user: String, val partner: String) {
     val userFile: File
     val partnerFile: File
 
     init {
-        userFile = createFileIfNotExists("${user}.trustline")
-        partnerFile = createFileIfNotExists("${partner}.trustline")
+        userFile = createFileIfNotExists(fileString(user))
+        partnerFile = createFileIfNotExists(fileString(partner))
+    }
+
+    fun fileString(name: String): String {
+        return "${name}.trustline"
     }
 
     fun createFileIfNotExists(filename: String): File {
@@ -47,6 +56,10 @@ class Trustline(val user: String, val partner: String) {
         writeBalance(userFile, userBalance)
         writeBalance(partnerFile, partnerBalance)
     }
+
+    fun userFileString(): String {
+        return fileString(user)
+    }
 }
 
 fun main(args: Array<String>) {
@@ -57,14 +70,38 @@ fun main(args: Array<String>) {
     commandLoop(trustline)
 }
 
+fun displayPrompt() {
+  print("> ")
+}
+
+fun watchForPayment(file: String) {
+  val currentDir = Path("")
+  val watchService = FileSystems.getDefault().newWatchService()
+  currentDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY)
+
+  while (true) {
+    val watchKey = watchService.take()
+
+    for (event in watchKey.pollEvents()) {
+        if (file == event.context().toString()) {
+            println()
+            println("You were paid!")
+            displayPrompt()
+        }
+    }
+
+    watchKey.reset()
+  }
+}
 fun commandLoop(trustline: Trustline) {
-    println(trustline.user)
-    println(trustline.partner)
+    thread {
+        watchForPayment(trustline.userFileString())
+    }
 
     val input = Scanner(System.`in`)
 
     while(true) {
-        print("> ")
+        displayPrompt()
 
         processCommand(input, trustline)
     }
