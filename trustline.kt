@@ -93,6 +93,7 @@ fun watchForPayment(file: String) {
     watchKey.reset()
   }
 }
+
 fun commandLoop(trustline: Trustline) {
     thread {
         watchForPayment(trustline.userFileString())
