@@ -89,31 +89,31 @@ fun main(args: Array<String>) {
 }
 
 fun displayPrompt() {
-  print("> ")
+    print("> ")
 }
 
 fun watchForPayment(trustline: Trustline) {
-  val currentDir = Path("")
-  val watchService = FileSystems.getDefault().newWatchService()
+    val currentDir = Path("")
+    val watchService = FileSystems.getDefault().newWatchService()
 
-  currentDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY)
+    currentDir.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY)
 
-  while (true) {
-    val watchKey = watchService.take()
+    while (true) {
+        val watchKey = watchService.take()
 
-    for (event in watchKey.pollEvents()) {
-        val fileName = event.context().toString()
-        val amount = trustline.matchPayment(fileName)
+        for (event in watchKey.pollEvents()) {
+            val fileName = event.context().toString()
+            val amount = trustline.matchPayment(fileName)
 
-        if (amount > 0) {
-            println()
-            println("You were paid ${amount}!")
-            displayPrompt()
+            if (amount > 0) {
+                println()
+                println("You were paid ${amount}!")
+                displayPrompt()
+            }
         }
-    }
 
-    watchKey.reset()
-  }
+        watchKey.reset()
+    }
 }
 
 fun commandLoop(trustline: Trustline) {
@@ -138,8 +138,8 @@ fun processCommand(input: Scanner, trustline: Trustline) {
             val amount = input.nextInt()
 
             if(amount > 0) {
-              println("Sent ${amount}")
-              trustline.payPartner(amount)
+                println("Sent ${amount}")
+                trustline.payPartner(amount)
             }
         }
         "balance" -> {
