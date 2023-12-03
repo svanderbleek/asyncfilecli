@@ -83,7 +83,7 @@ class Trustline(val user: String, val partner: String) {
 fun main(args: Array<String>) {
     val trustline = Trustline(args[0], args[1])
 
-	  println("Welcome to your Trustline!")
+    println("Welcome to your Trustline!")
 
     commandLoop(trustline)
 }
