@@ -35,7 +35,7 @@ Sent
 Goodbye.
 ```
 
-When running the CLI and a parnter pays you you should see an event
+When running the CLI and a partner pays you you should see an event
 
 ```
 You were paid 10!
