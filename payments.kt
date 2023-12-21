@@ -7,7 +7,7 @@ import kotlin.system.exitProcess
 import kotlin.io.path.Path
 import kotlin.concurrent.thread
 
-class Trustline(val user: String, val partner: String) {
+class Payments(val user: String, val partner: String) {
     val userFile: File
     val partnerFile: File
     var prevBalance: Int
@@ -81,18 +81,18 @@ class Trustline(val user: String, val partner: String) {
 }
 
 fun main(args: Array<String>) {
-    val trustline = Trustline(args[0], args[1])
+    val payments = Payments(args[0], args[1])
 
-    println("Welcome to your Trustline!")
+    println("Welcome!")
 
-    commandLoop(trustline)
+    commandLoop(payments)
 }
 
 fun displayPrompt() {
     print("> ")
 }
 
-fun watchForPayment(trustline: Trustline) {
+fun watchForPayment(payments: Payments) {
     val currentDir = Path("")
     val watchService = FileSystems.getDefault().newWatchService()
 
@@ -103,7 +103,7 @@ fun watchForPayment(trustline: Trustline) {
 
         for (event in watchKey.pollEvents()) {
             val fileName = event.context().toString()
-            val amount = trustline.matchPayment(fileName)
+            val amount = payments.matchPayment(fileName)
 
             if (amount > 0) {
                 println()
@@ -116,9 +116,9 @@ fun watchForPayment(trustline: Trustline) {
     }
 }
 
-fun commandLoop(trustline: Trustline) {
+fun commandLoop(payments: Payments) {
     thread {
-        watchForPayment(trustline)
+        watchForPayment(payments)
     }
 
     val input = Scanner(System.`in`)
@@ -126,11 +126,11 @@ fun commandLoop(trustline: Trustline) {
     while(true) {
         displayPrompt()
 
-        processCommand(input, trustline)
+        processCommand(input, payments)
     }
 }
 
-fun processCommand(input: Scanner, trustline: Trustline) {
+fun processCommand(input: Scanner, payments: Payments) {
     var command = input.next()
 
     when (command) {
@@ -139,11 +139,11 @@ fun processCommand(input: Scanner, trustline: Trustline) {
 
             if(amount > 0) {
                 println("Sent ${amount}")
-                trustline.payPartner(amount)
+                payments.payPartner(amount)
             }
         }
         "balance" -> {
-            println(trustline.userBalance())
+            println(payments.userBalance())
         }
         "exit" -> {
             println("Goodbye.")
