@@ -1,23 +1,23 @@
-## Async File CLI
+## Payments CLI
 
 Allows "payments" between two terminal sessions on the same machine using files for communication.
 
 ## Build
 
 ```
-kotlinc asyncfilecli.kt -include-runtime -d asycnfilecli.jar
+kotlinc payments.kt -include-runtime -d payments.jar
 ```
 
 ## Run
 
 ```
-java -jar asycfilecli.jar your-name partner-name
+java -jar payments.jar your-name partner-name
 ```
 
 Then in another terminal session run
 
 ```
-java -jar asycfilecli.jar partner-name user-name
+java -jar payments.jar partner-name user-name
 ```
 
 tmux can be used to display side by side
