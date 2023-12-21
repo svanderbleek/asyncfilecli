@@ -1,23 +1,23 @@
-## Trustline CLI
+## Async File CLI
 
-Allows payments between two terminal sessions on the same machine using files for communication.
+Allows "payments" between two terminal sessions on the same machine using files for communication.
 
 ## Build
 
 ```
-kotlinc trustline.kt -include-runtime -d trustline.jar
+kotlinc asyncfilecli.kt -include-runtime -d asycnfilecli.jar
 ```
 
 ## Run
 
 ```
-java -jar trustline.jar your-name partner-name
+java -jar asycfilecli.jar your-name partner-name
 ```
 
 Then in another terminal session run
 
 ```
-java -jar trustline.jar partner-name user-name
+java -jar asycfilecli.jar partner-name user-name
 ```
 
 tmux can be used to display side by side
